@@ -1,19 +1,49 @@
 'use client'
 
 /**
- * WalletProvider context.
+ * WalletProvider — global wallet state context.
  *
- * Provides wallet state (connected address, signTransaction) to all child components.
+ * Wraps the entire app (added in app/layout.tsx) so any component can call
+ * `useWallet()` to read the connected address or sign a transaction.
  *
- * Contributor note (Phase 2):
- * 1. Initialise `StellarWalletsKit` from `lib/wallet.ts`.
- * 2. Store `address: string | null` and `connected: boolean` in state.
- * 3. Implement `connect()` — calls `connectWallet(kit)`, sets address.
- * 4. Implement `disconnect()` — clears address.
- * 5. Implement `signTransaction(xdr)` — delegates to `kit.signTransaction`.
- * 6. Wrap the app in this provider in `app/layout.tsx`.
+ * Contributor steps:
+ * 1. Import wallet helpers:
+ *      import { createWalletKit, connectWallet, signTransaction as signTx }
+ *        from '@/lib/wallet'
+ *    These are stubbed in lib/wallet.ts — implement them there first.
  *
- * TODO (Phase 2): implement wallet state management.
+ * 2. Create the kit instance once with useMemo:
+ *      const kit = useMemo(() => createWalletKit(), [])
+ *
+ * 3. Implement `connect`:
+ *      async function connect() {
+ *        const addr = await connectWallet(kit)
+ *        setAddress(addr)
+ *      }
+ *    On success, persist the address to localStorage so the session survives
+ *    a page refresh:
+ *      localStorage.setItem('walletAddress', addr)
+ *
+ * 4. Implement `disconnect`:
+ *      function disconnect() {
+ *        setAddress(null)
+ *        localStorage.removeItem('walletAddress')
+ *      }
+ *
+ * 5. Implement `signTransaction`:
+ *      async function signTransaction(xdr: string) {
+ *        return signTx(kit, xdr)
+ *      }
+ *
+ * 6. On mount, restore the address from localStorage:
+ *      useEffect(() => {
+ *        const saved = localStorage.getItem('walletAddress')
+ *        if (saved) setAddress(saved)
+ *      }, [])
+ *
+ * 7. Add this provider to app/layout.tsx:
+ *      import WalletProvider from '@/components/providers/WalletProvider'
+ *      // wrap children: <WalletProvider>{children}</WalletProvider>
  */
 
 import { createContext, useContext } from 'react'
@@ -29,13 +59,9 @@ interface WalletContextValue {
 const WalletContext = createContext<WalletContextValue>({
   address: null,
   connected: false,
-  connect: async () => {
-    throw new Error('WalletProvider not mounted')
-  },
+  connect: async () => { throw new Error('WalletProvider not mounted') },
   disconnect: () => {},
-  signTransaction: async () => {
-    throw new Error('WalletProvider not mounted')
-  },
+  signTransaction: async () => { throw new Error('WalletProvider not mounted') },
 })
 
 export function useWallet() {
@@ -43,9 +69,10 @@ export function useWallet() {
 }
 
 export default function WalletProvider({ children }: { children: React.ReactNode }) {
-  // TODO (Phase 2): implement wallet state with StellarWalletsKit.
-  // const [address, setAddress] = useState<string | null>(null)
-  // const kit = useMemo(() => createWalletKit(), [])
+  // TODO: const [address, setAddress] = useState<string | null>(null)
+  // TODO: const kit = useMemo(() => createWalletKit(), [])
+  // TODO: implement connect, disconnect, signTransaction (see steps above)
+  // TODO: restore address from localStorage on mount (useEffect)
 
   return (
     <WalletContext.Provider

@@ -1,18 +1,33 @@
+/**
+ * Home page — DAO dashboard.
+ *
+ * This is a React Server Component. Data fetching happens here (no useEffect).
+ *
+ * Contributor steps:
+ * 1. Import `getProposalCount`, `getProposals` from `@/lib/contracts/governance`
+ *    and `getTreasuryBalance` from `@/lib/contracts/treasury`.
+ * 2. Call them at the top of this function (they are async — await each one).
+ *    Example:
+ *      const count = await getProposalCount()
+ *      const recent = await getProposals(0n, 3)
+ *      const balance = await getTreasuryBalance(XLM_CONTRACT_ADDRESS)
+ *    XLM_CONTRACT_ADDRESS on testnet: CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
+ * 3. Pass `count` and `balance` as `value` props to the three <StatCard> components.
+ *    For "Active Proposals", filter `recent` by status === 'Active'.
+ * 4. Replace the placeholder <p> in the "Recent Proposals" section with:
+ *      {recent.map(p => <ProposalCard key={p.id.toString()} proposal={p} />)}
+ *    Import ProposalCard from `@/components/proposals/ProposalCard`.
+ * 5. Handle the loading state — wrap the data-fetching section in a <Suspense>
+ *    boundary with a skeleton fallback (see Next.js docs on streaming).
+ */
+
 import Link from 'next/link'
 
-/**
- * Home page — DAO dashboard landing.
- *
- * Contributor note (Phase 2):
- * Replace the static cards with real data fetched from the governance contract:
- * 1. Call `getProposalCount()` from `lib/contracts/governance.ts`.
- * 2. Call `getProposals(0n, 3)` to show the 3 most recent proposals.
- * 3. Call `getTreasuryBalance(XLM_ADDRESS)` from `lib/contracts/treasury.ts`.
- * 4. Pass data as props to the stat cards and proposal list below.
- *
- * TODO (Phase 2): fetch and display live on-chain data.
- */
 export default function HomePage() {
+  // TODO: const count = await getProposalCount()
+  // TODO: const recent = await getProposals(0n, 3)
+  // TODO: const balance = await getTreasuryBalance(XLM_CONTRACT_ADDRESS)
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-12">
       <header className="mb-10">
@@ -22,14 +37,21 @@ export default function HomePage() {
         </p>
       </header>
 
-      {/* Stats row */}
+      {/* ── Stats row ──────────────────────────────────────────────────────────
+          TODO: replace "—" values with live data once fetching is implemented.
+          Format balance with formatUnits(balance, 7) — XLM has 7 decimal places. */}
       <section className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCard label="Total Proposals" value="—" />
-        <StatCard label="Active Proposals" value="—" />
-        <StatCard label="Treasury Balance" value="—" />
+        <StatCard label="Total Proposals" value="—" /* TODO: value={count.toString()} */ />
+        <StatCard label="Active Proposals" value="—" /* TODO: value={activeCount.toString()} */ />
+        <StatCard label="Treasury Balance" value="—" /* TODO: value={`${formattedBalance} XLM`} */ />
       </section>
 
-      {/* Recent proposals */}
+      {/* ── Recent proposals ───────────────────────────────────────────────────
+          TODO: replace the placeholder <p> with:
+            {recent.length === 0
+              ? <p className="text-gray-500">No proposals yet.</p>
+              : recent.map(p => <ProposalCard key={p.id.toString()} proposal={p} />)
+            } */}
       <section>
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Recent Proposals</h2>
@@ -37,7 +59,6 @@ export default function HomePage() {
             View all →
           </Link>
         </div>
-        {/* TODO (Phase 2): replace with <ProposalList proposals={proposals} /> */}
         <p className="text-gray-500">No proposals yet. Connect your wallet to create one.</p>
       </section>
     </main>
