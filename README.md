@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stellar DAO Governance — Frontend
 
-## Getting Started
+A Next.js frontend for the [Stellar DAO Governance Framework](https://github.com/Stellar-s-Gospel-Tech/Stellar-DAO-Governance-Framework) — browse proposals, cast votes, and track the treasury directly on-chain.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js 15** (App Router, TypeScript)
+- **Tailwind CSS**
+- **@stellar/stellar-sdk** — Soroban RPC calls
+- **@creit.tech/stellar-wallets-kit** — Freighter and SEP-43 wallet support
+
+No backend. All state lives on-chain. The frontend talks directly to Stellar RPC.
+
+## Architecture
+
+```
+app/
+  page.tsx              ← Dashboard (proposal stats, treasury balance)
+  proposals/
+    page.tsx            ← Proposal list
+    [id]/page.tsx       ← Proposal detail + vote form
+    new/page.tsx        ← Create proposal
+  treasury/page.tsx     ← Treasury balance + spend history
+
+components/
+  layout/Navbar.tsx     ← Nav + wallet connect button
+  proposals/
+    ProposalCard.tsx    ← Proposal summary card
+    StatusBadge.tsx     ← Status pill (Active / Approved / Rejected / Executed)
+    VoteForm.tsx        ← For / Against / Abstain vote buttons
+  providers/
+    WalletProvider.tsx  ← Wallet context (connect, sign, disconnect)
+
+lib/
+  stellar.ts            ← Soroban RPC client singleton
+  wallet.ts             ← Wallet kit helpers
+  contracts/
+    governance.ts       ← Typed helpers for governance contract calls
+    treasury.ts         ← Typed helpers for treasury contract calls
+
+types/
+  governance.ts         ← TypeScript mirrors of on-chain Soroban types
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Quickstart
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.example .env.local
+# Fill in contract addresses in .env.local
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+npm install
+npm run dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000).
 
-To learn more about Next.js, take a look at the following resources:
+## Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+See [CONTRIBUTING.md](./CONTRIBUTING.md). Every `TODO (Phase 2)` comment in the codebase is a potential issue.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
